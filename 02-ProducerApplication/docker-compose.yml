@@ -1,6 +1,15 @@
 version: '3.3'
 
 services:
+  eureka-server:
+    image: rajeshmandala/eureka-image  # Pulling from Docker Hub
+    container_name: eureka-server
+    restart: always
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices-network
+
   mysql-db:
     image: mysql:8
     container_name: mysql-db
@@ -13,15 +22,6 @@ services:
     networks:
       - microservices-network
 
-  eureka-server:
-    image: rajeshmandala/eureka-image  # Pulling from Docker Hub
-    container_name: eureka-server
-    restart: always
-    ports:
-      - "8761:8761"
-    networks:
-      - microservices-network
-
   producer-app:
     build: .
     container_name: producer-app
@@ -30,10 +30,13 @@ services:
       - mysql-db
       - eureka-server
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://34.229.78.152:3306/producer_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/producer_db?createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root1234
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://34.229.78.152:8761/eureka
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+      EUREKA_CLIENT_REGISTER_WITH_EUREKA: "true"
+      EUREKA_CLIENT_FETCH_REGISTRY: "true"
     ports:
       - "4043:4043"
     networks:
