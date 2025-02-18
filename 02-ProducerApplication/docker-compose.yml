@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   eureka-server:
-    image: rajeshmandala/eureka-image  # Pulling from Docker Hub
+    image: eurekalocalimage  # Using local Eureka image
     container_name: eureka-server
     restart: always
     ports:
